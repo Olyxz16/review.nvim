@@ -187,24 +187,15 @@ end
 function M.enable(v)
     if vim.o.diffexpr ~= EXPR then saved_diffexpr = vim.o.diffexpr end
     vim.o.diffexpr = EXPR
-    -- difftastic's token highlights replace Neovim's character-level ones
-    for _, win in ipairs({ v.base_win, v.src_win }) do
-        if vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_set_option_value("winhighlight", "DiffText:DiffChange", { win = win, scope = "local" })
-        end
-    end
 end
+
+-- difftastic's token highlights (extmarks) replace Neovim's character-level ones
+M.text_hl = { base = "DiffChange", src = "DiffChange" }
 
 function M.disable(v)
     if vim.o.diffexpr == EXPR then vim.o.diffexpr = saved_diffexpr or "" end
     for _, buf in ipairs({ v.base_buf, v.src_buf }) do
         if vim.api.nvim_buf_is_valid(buf) then vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1) end
-    end
-    for _, win in ipairs({ v.base_win, v.src_win }) do
-        if vim.api.nvim_win_is_valid(win) then
-            local restore = win == v.src_win and v.saved.winhighlight or ""
-            vim.api.nvim_set_option_value("winhighlight", restore, { win = win, scope = "local" })
-        end
     end
 end
 

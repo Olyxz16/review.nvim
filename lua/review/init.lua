@@ -2,28 +2,7 @@ local config = require("review.config")
 
 local M = {}
 
-local function highlights()
-    local set = function(name, link) vim.api.nvim_set_hl(0, name, { link = link, default = true }) end
-    set("ReviewCommentSign", "DiagnosticSignInfo")
-    set("ReviewCommentText", "DiagnosticVirtualTextInfo")
-    set("ReviewQuestionSign", "DiagnosticSignWarn")
-    set("ReviewQuestionText", "DiagnosticVirtualTextWarn")
-    set("ReviewDifftAdd", "DiffText")
-    set("ReviewDifftDelete", "DiffText")
-    set("ReviewInlineAdd", "DiffAdd")
-    set("ReviewInlineAddText", "DiffText")
-    set("ReviewInlineDelete", "DiffDelete")
-    set("ReviewInlineDeleteText", "DiffText")
-    set("ReviewInlineDeleteNr", "DiffDelete")
-    set("ReviewMode", "Comment")
-    set("ReviewModeActive", "PmenuSel")
-end
-
-highlights()
-vim.api.nvim_create_autocmd("ColorScheme", {
-    group = vim.api.nvim_create_augroup("review.highlights", { clear = true }),
-    callback = highlights,
-})
+require("review.colors").setup()
 
 -- Public API
 function M.start(base) require("review.session").start(base) end
