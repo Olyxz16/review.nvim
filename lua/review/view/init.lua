@@ -45,6 +45,19 @@ local function blank_filler(win)
     set_local(win, "fillchars", (fc ~= "" and fc .. "," or "") .. "diff: ")
 end
 
+-- Diff highlights of the two windows. Lines only on the base side are deletions:
+-- Neovim draws them as DiffAdd ("only in this window"), here they look deleted.
+local function winhl()
+    local text = M.modes[V.mode].text_hl
+    if vim.api.nvim_win_is_valid(V.base_win) then
+        set_local(V.base_win, "winhighlight", "DiffAdd:ReviewDeleteLine,DiffText:" .. text.base)
+    end
+    if vim.api.nvim_win_is_valid(V.src_win) then
+        local saved = V.saved.winhighlight
+        set_local(V.src_win, "winhighlight", (saved ~= "" and saved .. "," or "") .. "DiffText:" .. text.src)
+    end
+end
+
 local function winbar()
     if not (V and vim.api.nvim_win_is_valid(V.base_win)) then return end
     local session = require("review.session")
@@ -110,6 +123,7 @@ local function set_mode(mode)
     if V.mode then M.modes[V.mode].disable(V) end
     V.mode = mode
     M.modes[mode].enable(V)
+    winhl()
     winbar()
     diffupdate()
 end
@@ -127,6 +141,7 @@ local function retarget(buf)
     vim.api.nvim_win_call(V.base_win, function() vim.cmd("diffthis") end)
     vim.api.nvim_win_call(V.src_win, function() vim.cmd("diffthis") end)
     M.modes[V.mode].enable(V)
+    winhl()
     winbar()
     diffupdate()
 end

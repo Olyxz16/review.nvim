@@ -79,8 +79,24 @@ of the file when marked).
 
 ## Highlights
 
-`ReviewCommentSign`, `ReviewCommentText`, `ReviewQuestionSign`,
-`ReviewQuestionText`, `ReviewDifftAdd`, `ReviewDifftDelete`, `ReviewInlineAdd`,
-`ReviewInlineAddText`, `ReviewInlineDelete`, `ReviewInlineDeleteText`,
-`ReviewInlineDeleteNr`, `ReviewMode`,
-`ReviewModeActive`. All are default links and can be overridden.
+Comment groups link to the diagnostic groups: `ReviewCommentSign`,
+`ReviewCommentText`, `ReviewQuestionSign`, `ReviewQuestionText`.
+
+Diff groups are derived from your colorscheme (`Normal`, `DiffAdd`,
+`DiffDelete`) and recomputed on `:colorscheme` / `'background'` changes:
+
+| Group | Used for | Derived as |
+|---|---|---|
+| `ReviewInlineAdd` | added lines (inline) | `DiffAdd` bg only, syntax colors kept |
+| `ReviewDeleteLine` | base-only lines (side-by-side, left) | `DiffDelete` bg only |
+| `ReviewInlineDelete`, `ReviewInlineDeleteNr` | deleted lines (inline) | `DiffDelete` bg, readable fg |
+| `ReviewDifftAdd`, `ReviewInlineAddText` | added tokens | stronger `DiffAdd`, bg only |
+| `ReviewDifftDelete`, `ReviewInlineDeleteText` | deleted tokens | stronger `DiffDelete` |
+| `ReviewMode`, `ReviewModeActive` | winbar mode names | `Comment` (if readable), `PmenuSel` |
+
+Token colors keep the line's hue with more chroma, and never give `Normal` or
+syntax colors less contrast than they have on the theme's own diff lines (capped
+at WCAG AA 4.5:1). A theme without a `DiffDelete` bg gets `Normal` bg tinted red.
+In git side-by-side mode Neovim's `DiffText` is mapped to the token groups.
+Without `'termguicolors'` all of these are plain links. Groups you define yourself
+are never overwritten.
