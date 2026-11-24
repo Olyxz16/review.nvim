@@ -5,6 +5,8 @@ Review a branch from inside Neovim, with your LSP, pickers and colorscheme:
 - **Review base**: `:Review develop` diffs everything against the merge-base of
   `HEAD` and `develop` (gitsigns signs and hunk actions follow it, if installed).
 - **Changed files** in the quickfix list, sorted by path, tests next to their source.
+- **Review progress**: mark files as reviewed (`[x]`); persisted per branch, and a
+  file edited after being marked shows as `[~]` (changed since reviewed).
 - **Diff view** in two layouts, each with two modes:
   - *side-by-side*: the base version on the left, your real buffer on the right;
   - *inline*: your real buffer only, deleted lines shown in place as virtual lines;
@@ -44,6 +46,7 @@ Review a branch from inside Neovim, with your LSP, pickers and colorscheme:
 | `:Review [base]` | | start: merge-base, gitsigns base, changed files |
 | `:ReviewEnd` | | gitsigns back to the index (comments are kept) |
 | `:ReviewFiles` | `<leader>rf` | changed files → quickfix |
+| `:[range]ReviewMark` | `<leader>rv` | toggle reviewed: quickfix entries under cursor / visual range, or the current file |
 | `:ReviewView [git\|difft\|next\|close]` | `<leader>rs` | toggle side-by-side (switches from inline) |
 | `:ReviewView inline [mode]` | `<leader>ri` | toggle inline (switches from side-by-side) |
 | | `<leader>rd` | difft mode in the open layout (toggle) |
@@ -70,6 +73,9 @@ why the guard?
 
 Editable by hand; saving it in Neovim reloads the comments. Comments follow
 edits during a session and move to the matching line if the file changed.
+
+Reviewed marks live next to it in `<branch>.reviewed.json` (path → blob hash
+of the file when marked).
 
 ## Highlights
 

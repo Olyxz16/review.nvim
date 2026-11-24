@@ -9,6 +9,10 @@ cmd("Review", function(o) require("review").start(o.args) end, {
 })
 cmd("ReviewEnd", function() require("review").stop() end, { desc = "End the review session" })
 cmd("ReviewFiles", function() require("review").files() end, { desc = "Changed files -> quickfix" })
+cmd("ReviewMark", function(o) require("review").mark(o.line1, o.line2) end, {
+    range = true,
+    desc = "Toggle reviewed on the file (or quickfix entries in range)",
+})
 cmd("ReviewComments", function(o) require("review").list(o.args) end, {
     nargs = "?",
     complete = function() return { "comment", "question" } end,

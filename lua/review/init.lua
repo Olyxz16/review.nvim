@@ -29,6 +29,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 function M.start(base) require("review.session").start(base) end
 function M.stop() require("review.session").stop() end
 function M.files() require("review.session").files() end
+function M.mark(l1, l2) require("review.progress").toggle(l1, l2) end
 function M.comment(kind, s, e) require("review.comments").comment(kind, s, e) end
 function M.delete() require("review.comments").delete() end
 function M.list(kind) require("review.comments").list(kind) end
@@ -60,6 +61,12 @@ local function keymaps(km)
     map("n", "delete", M.delete, "delete comment")
     map("n", "list", function() M.list() end, "list comments")
     map("n", "files", M.files, "changed files")
+    map("n", "mark", function() M.mark() end, "toggle file reviewed")
+    map("x", "mark", function()
+        local s, e = vim.fn.line("v"), vim.fn.line(".")
+        vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
+        M.mark(s, e)
+    end, "toggle files reviewed")
     map("n", "notes", M.notes, "open notes file")
     map("n", "view", M.toggle_view, "toggle side-by-side view")
     map("n", "inline", M.toggle_inline, "toggle inline view")

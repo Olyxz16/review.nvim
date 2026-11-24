@@ -90,8 +90,7 @@ function M.files()
             table.insert(items, {
                 filename = c.root .. "/" .. f,
                 lnum = first_hunk[f] or 1,
-                text = ("+%s -%s"):format(add, del),
-                user_data = { key = key, is_test = is_test, path = f },
+                user_data = { key = key, is_test = is_test, path = f, stat = ("+%s -%s"):format(add, del) },
             })
         end
     end
@@ -102,9 +101,14 @@ function M.files()
         return x.path < y.path
     end)
 
+    -- %d is filled with the reviewed count (see review.progress)
+    local esc = function(x) return (tostring(x):gsub("%%", "%%%%")) end
+    local title = ("Review: %s vs %s (%%d/%d reviewed)"):format(esc(c.branch), esc(M.base_ref()), #items)
+    local done = require("review.progress").decorate(items)
     vim.fn.setqflist({}, " ", {
-        title = ("Review: %s vs %s (%d files)"):format(c.branch, M.base_ref(), #items),
+        title = title:format(done),
         items = items,
+        context = { review_files = true, title = title },
     })
     util.open_qf()
 end

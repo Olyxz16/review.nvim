@@ -20,6 +20,7 @@ M.defaults = {
         delete = "<leader>rx",
         list = "<leader>rl",
         files = "<leader>rf",
+        mark = "<leader>rv",
         notes = "<leader>rn",
         view = "<leader>rs",
         inline = "<leader>ri",
