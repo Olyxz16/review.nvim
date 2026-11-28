@@ -104,11 +104,13 @@ function M.files()
     -- %d is filled with the reviewed count (see review.progress)
     local esc = function(x) return (tostring(x):gsub("%%", "%%%%")) end
     local title = ("Review: %s vs %s (%%d/%d reviewed)"):format(esc(c.branch), esc(M.base_ref()), #items)
-    local done = require("review.progress").decorate(items)
+    local progress = require("review.progress")
+    local done = progress.decorate(items)
     vim.fn.setqflist({}, " ", {
         title = title:format(done),
         items = items,
         context = { review_files = true, title = title },
+        quickfixtextfunc = progress.qf_text,
     })
     util.open_qf()
 end

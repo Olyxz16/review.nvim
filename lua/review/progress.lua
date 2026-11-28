@@ -65,7 +65,7 @@ end
 
 local prefix = { done = "[x] ", stale = "[~] " }
 
---- Set the text of changed-files quickfix items from their status.
+--- Set the status and text of changed-files quickfix items.
 --- Returns the number of files marked as reviewed (and unchanged since).
 function M.decorate(items)
     local rels = vim.tbl_map(function(it) return it.user_data.path end, items)
@@ -74,10 +74,31 @@ function M.decorate(items)
     for _, it in ipairs(items) do
         local u = it.user_data
         local s = st[u.path]
+        u.status = s
         if s == "done" then done = done + 1 end
-        it.text = (prefix[s] or "[ ] ") .. u.stat .. (s == "stale" and "  (changed since reviewed)" or "")
+        it.text = u.stat .. (s == "stale" and "  (changed since reviewed)" or "")
     end
     return done
+end
+
+--- 'quickfixtextfunc' of the changed-files list: the default quickfix line
+--- ("<filename>|<lnum> col <col>|<text>") with the reviewed marker moved in
+--- front of the file name.
+function M.qf_text(info)
+    local items = vim.fn.getqflist({ id = info.id, items = 1 }).items
+    local lines = {}
+    for i = info.start_idx, info.end_idx do
+        local it = items[i]
+        local name = it.bufnr > 0 and vim.fn.bufname(it.bufnr) or ""
+        if name ~= "" then name = vim.fn.fnamemodify(name, ":p:.") end
+        local pos = it.lnum > 0 and tostring(it.lnum) or ""
+        if pos ~= "" and it.col > 0 then pos = pos .. " col " .. it.col end
+        local u = it.user_data
+        local line = (prefix[type(u) == "table" and u.status] or "[ ] ") .. name .. "|" .. pos
+        if type(it.text) == "string" and it.text ~= "" then line = line .. "| " .. it.text end
+        lines[#lines + 1] = line
+    end
+    return lines
 end
 
 function M.is_files_list(ctx)
